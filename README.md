@@ -1,0 +1,2 @@
+# BuyurtmaGo
+BuyurtmaGo loyihasi
