@@ -1,0 +1,7 @@
+/.vs
+/src/BuyurtmaGo.AdminAPI/bin
+/src/BuyurtmaGo.AdminAPI/obj
+/src/BuyurtmaGo.API/bin
+/src/BuyurtmaGo.API/obj
+/src/BuyurtmaGo.Core/bin
+/src/BuyurtmaGo.Core/obj
