@@ -1,4 +1,6 @@
 using BuyurtmaGo.Core;
+using BuyurtmaGo.Core.Authentications.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +33,10 @@ builder.Services.AddDbContext<BuyurtmaGoDb>(options =>
     });
     options.UseSnakeCaseNamingConvention();
 });
-    
+
+builder.Services.AddIdentity<User, Role>()
+    .AddEntityFrameworkStores<BuyurtmaGoDb>()
+    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
