@@ -1,4 +1,5 @@
 ﻿using BuyurtmaGo.Core.Authentications.Entities;
+using BuyurtmaGo.Core.Interfaces;
 using BuyurtmaGo.Core.Models.Options;
 using Duende.IdentityModel;
 using Microsoft.Extensions.Options;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace BuyurtmaGo.Core.Services
 {
-    public class JwtTokenGenerator
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly TokenGenerationOptions _tokenGenerationOptions;
 

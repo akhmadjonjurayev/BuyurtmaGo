@@ -1,5 +1,9 @@
 using BuyurtmaGo.Core;
 using BuyurtmaGo.Core.Authentications.Entities;
+using BuyurtmaGo.Core.Interfaces;
+using BuyurtmaGo.Core.Managers;
+using BuyurtmaGo.Core.Models.Options;
+using BuyurtmaGo.Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,6 +41,11 @@ builder.Services.AddDbContext<BuyurtmaGoDb>(options =>
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<BuyurtmaGoDb>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.Configure<TokenGenerationOptions>(builder.Configuration.GetSection(nameof(TokenGenerationOptions)));
+
+builder.Services.AddScoped<AuthManager>();
 
 var app = builder.Build();
 
