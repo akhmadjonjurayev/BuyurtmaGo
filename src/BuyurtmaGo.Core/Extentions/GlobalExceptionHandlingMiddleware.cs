@@ -1,4 +1,4 @@
-﻿using BuyurtmaGo.Core.Models;
+﻿using BuyurtmaGo.Core.Authentications.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

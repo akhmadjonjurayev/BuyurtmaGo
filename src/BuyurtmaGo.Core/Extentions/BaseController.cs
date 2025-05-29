@@ -1,4 +1,4 @@
-﻿using BuyurtmaGo.Core.Models;
+﻿using BuyurtmaGo.Core.Authentications.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuyurtmaGo.Core.Extentions

@@ -1,10 +1,13 @@
-﻿using BuyurtmaGo.Core.Authentications.Entities;
+﻿using BuyurtmaGo.Core.Authentications;
+using BuyurtmaGo.Core.Authentications.Entities;
+using BuyurtmaGo.Core.Authentications.Models;
 using BuyurtmaGo.Core.Authentications.Options;
 using BuyurtmaGo.Core.Enums;
 using BuyurtmaGo.Core.Interfaces;
-using BuyurtmaGo.Core.Models;
 using Duende.IdentityModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -14,8 +17,11 @@ namespace BuyurtmaGo.Core.Managers
     public record SignInViewModel(string UserName, string Password);
 
     public class AuthManager(UserManager<User> _userManager,
+        BuyurtmaGoDb _db,
+        JwtTokenReader _jwtTokenReader,
         IJwtTokenGenerator _jwtTokenManager,
-        IOptions<TokenGenerationOptions> _options)
+        IOptions<TokenGenerationOptions> _options,
+        IHttpContextAccessor _httpContextAccessor)
     {
         private const string DefaultTokenProvider = nameof(DefaultTokenProvider);
         public async ValueTask<OperationResult<TokenResponse, ErrorCodes>> SignAsync(SignInViewModel signInView)
@@ -49,11 +55,34 @@ namespace BuyurtmaGo.Core.Managers
             }
 
             //Because token's expiration already added in token claim, we subtract them
-            var expiresInDays = _options.Value.RefreshTokenExpireInDays - _options.Value.Expiration.Days;
+            var expiresInDays = _options.Value.RefreshTokenExpireInDays - _options.Value.Expiration;
 
             var expirationDate = DateTimeOffset.FromUnixTimeSeconds(tokenExpireTime).AddDays(expiresInDays);
 
             return expirationDate > DateTimeOffset.Now;
+        }
+
+        public async ValueTask<OperationResult<UserInfoModel, ErrorCodes>> GetUserInfo()
+        {
+            var userId = _jwtTokenReader.GetUserId();
+
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+
+            if (user is null) return ErrorCodes.UserNotFound;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var userInfo = new UserInfoModel(
+                user.Id,
+                user.UserName,
+                user.FirstName,
+                user.LastName,
+                user.PhoneNumber,
+                roles.FirstOrDefault(),
+                user.AvatarId
+            );
+
+            return userInfo;
         }
 
         public async Task<string> GetRefreshToken(User user) =>

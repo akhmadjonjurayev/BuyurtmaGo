@@ -1,10 +1,10 @@
-﻿namespace BuyurtmaGo.Core.Models
+﻿namespace BuyurtmaGo.Core.Authentications.Models
 {
     public class OperationResult
     {
         public bool IsSuccess { get; set; }
 
-        public ErrorModel? Error { get; set; }
+        public ErrorModel Error { get; set; }
     }
 
     public class OperationResult<T> : OperationResult
@@ -13,14 +13,14 @@
 
         public OperationResult(ErrorModel errorModel)
         {
-            this.IsSuccess = false;
-            this.Error = errorModel;
+            IsSuccess = false;
+            Error = errorModel;
         }
 
         public OperationResult(T data)
         {
-            this.IsSuccess = true;
-            this.Data = data;
+            IsSuccess = true;
+            Data = data;
         }
 
         public static implicit operator OperationResult<T>(T data)
@@ -45,7 +45,7 @@
         {
         }
 
-        public OperationResult(E code, string? message) : base(new ErrorModel<E>(code, message))
+        public OperationResult(E code, string message) : base(new ErrorModel<E>(code, message))
         {
         }
 

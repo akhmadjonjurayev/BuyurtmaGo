@@ -2,10 +2,13 @@ using BuyurtmaGo.Core;
 using BuyurtmaGo.Core.Authentications;
 using BuyurtmaGo.Core.Authentications.Entities;
 using BuyurtmaGo.Core.Authentications.Options;
+using BuyurtmaGo.Core.Extentions;
 using BuyurtmaGo.Core.Interfaces;
 using BuyurtmaGo.Core.Managers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +45,26 @@ builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<BuyurtmaGoDb>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["TokenGenerationOptions:Issuer"],
+            ValidAudience = builder.Configuration["TokenGenerationOptions:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["TokenGenerationOptions:Secret"]!))
+        };
+    });
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<JwtTokenReader>();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.Configure<TokenGenerationOptions>(builder.Configuration.GetSection(nameof(TokenGenerationOptions)));
 
@@ -52,8 +75,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseGlobalExceptionHandler();
+
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

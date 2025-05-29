@@ -6,5 +6,6 @@
         PasswordIsWrong = 101,
 
         UserNotFound = 200,
+        TokenNotFound = 201,
     }
 }
