@@ -3,5 +3,7 @@ BuyurtmaGo loyihasi
 
 
 TODO List: 
- 1. Global Exception
- 2. OperationResult
+ 1. UserCrud
+ 2. ChangePassword
+ 3. Dockerfile, Docker Compose
+ 4. CI/CD
