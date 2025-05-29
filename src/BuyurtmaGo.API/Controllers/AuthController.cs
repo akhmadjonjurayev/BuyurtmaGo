@@ -1,12 +1,11 @@
-﻿using BuyurtmaGo.Core.Managers;
-using Microsoft.AspNetCore.Http;
+﻿using BuyurtmaGo.Core.Extentions;
+using BuyurtmaGo.Core.Managers;
+using BuyurtmaGo.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuyurtmaGo.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly AuthManager _authManager;
 
@@ -16,9 +15,11 @@ namespace BuyurtmaGo.API.Controllers
         }
 
         [HttpPost("signin")]
+        [ProducesResponseType(typeof(TokenResponse), 200)]
+        [ProducesResponseType(typeof(ErrorModel), 400)]
         public async Task<IActionResult> SignIn([FromBody] SignInViewModel viewModel)
         {
-            return Ok(await _authManager.SignAsync(viewModel));
+            return Result(await _authManager.SignAsync(viewModel));
         }
     }
 }

@@ -1,14 +1,15 @@
 ﻿using BuyurtmaGo.Core.Authentications.Entities;
+using BuyurtmaGo.Core.Authentications.Options;
 using BuyurtmaGo.Core.Interfaces;
-using BuyurtmaGo.Core.Models.Options;
 using Duende.IdentityModel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BuyurtmaGo.Core.Services
+namespace BuyurtmaGo.Core.Authentications
 {
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
@@ -16,10 +17,10 @@ namespace BuyurtmaGo.Core.Services
 
         public JwtTokenGenerator(IOptions<TokenGenerationOptions> options)
         {
-            this._tokenGenerationOptions = options.Value;
+            _tokenGenerationOptions = options.Value;
         }
 
-        public string GenerateToken(User user, string roleName, IList<Claim>? claimsList = null)
+        public string GenerateToken(User user, string roleName, IList<Claim> claimsList = null)
         {
             var now = DateTime.UtcNow;
             var claims = new List<Claim>
@@ -49,6 +50,30 @@ namespace BuyurtmaGo.Core.Services
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             return encodedJwt;
+        }
+
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidAudience = _tokenGenerationOptions.Audience,
+                ValidIssuer = _tokenGenerationOptions.Issuer,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenGenerationOptions.Secret)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
 
         private int ToUnixTime(DateTime dateTime)

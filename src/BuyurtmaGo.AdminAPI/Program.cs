@@ -52,6 +52,8 @@ app.Seed();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseGlobalExceptionHandler();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

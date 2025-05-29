@@ -1,9 +1,9 @@
 using BuyurtmaGo.Core;
+using BuyurtmaGo.Core.Authentications;
 using BuyurtmaGo.Core.Authentications.Entities;
+using BuyurtmaGo.Core.Authentications.Options;
 using BuyurtmaGo.Core.Interfaces;
 using BuyurtmaGo.Core.Managers;
-using BuyurtmaGo.Core.Models.Options;
-using BuyurtmaGo.Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

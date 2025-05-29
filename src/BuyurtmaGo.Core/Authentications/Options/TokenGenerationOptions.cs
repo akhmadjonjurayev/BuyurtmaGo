@@ -1,4 +1,4 @@
-﻿namespace BuyurtmaGo.Core.Models.Options
+﻿namespace BuyurtmaGo.Core.Authentications.Options
 {
     public class TokenGenerationOptions
     {
