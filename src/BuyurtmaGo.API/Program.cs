@@ -7,12 +7,18 @@ using BuyurtmaGo.Core.Interfaces;
 using BuyurtmaGo.Core.Managers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -45,22 +51,8 @@ builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<BuyurtmaGoDb>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = builder.Configuration["TokenGenerationOptions:Issuer"],
-            ValidAudience = builder.Configuration["TokenGenerationOptions:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["TokenGenerationOptions:Secret"]!))
-        };
-    });
+builder.Services.AddAuth(builder.Configuration)
+    .AddDefaultAuthorization();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<JwtTokenReader>();

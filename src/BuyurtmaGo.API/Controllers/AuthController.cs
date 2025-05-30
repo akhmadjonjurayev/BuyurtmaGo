@@ -1,6 +1,7 @@
 ﻿using BuyurtmaGo.Core.Authentications.Models;
 using BuyurtmaGo.Core.Extentions;
 using BuyurtmaGo.Core.Managers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuyurtmaGo.API.Controllers
@@ -23,6 +24,7 @@ namespace BuyurtmaGo.API.Controllers
         }
 
         [HttpGet("me")]
+        [Authorize]
         [ProducesResponseType(typeof(UserInfoModel), 200)]
         [ProducesResponseType(typeof(ErrorModel), 400)]
         public async Task<IActionResult> GetUserInfo()
